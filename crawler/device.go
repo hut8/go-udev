@@ -14,6 +14,7 @@ import (
 
 const (
 	BASE_DEVPATH = "/sys/devices"
+	SYSFS_ROOT   = "/sys"
 )
 
 type Device struct {
@@ -56,7 +57,10 @@ func ExistingDevices(queue chan Device, errs chan error, matcher netlink.Matcher
 					return err
 				}
 
-				kObj := filepath.Dir(path)
+				kObj, err := makeKObjPath(path)
+				if err != nil {
+					return fmt.Errorf("cannot make kobj path for %s, err: %w", path, err)
+				}
 
 				// Append to env subsystem if existing
 				if link, err := os.Readlink(kObj + "/subsystem"); err == nil {
@@ -79,6 +83,18 @@ func ExistingDevices(queue chan Device, errs chan error, matcher netlink.Matcher
 		close(queue)
 	}()
 	return quit
+}
+
+func makeKObjPath(path string) (string, error) {
+	kObj := filepath.Dir(path)
+	if !strings.HasPrefix(kObj, SYSFS_ROOT) {
+		return "", fmt.Errorf("wrong sysfs device path root: %s", kObj)
+	}
+	kObj, err := filepath.Rel(SYSFS_ROOT, kObj)
+	if err != nil {
+		return "", fmt.Errorf("cannot get relative path for %s: %w", kObj, err)
+	}
+	return filepath.Join("/", kObj), nil
 }
 
 // getEventFromUEventFile return all variables defined in /sys/**/uevent files

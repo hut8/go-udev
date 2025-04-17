@@ -60,15 +60,15 @@ func (e UEvent) Bytes() []byte {
 
 func (e UEvent) Equal(e2 UEvent) (bool, error) {
 	if e.Action != e2.Action {
-		return false, fmt.Errorf("Wrong action (got: %s, wanted: %s)", e.Action, e2.Action)
+		return false, fmt.Errorf("wrong action (got: %s, wanted: %s)", e.Action, e2.Action)
 	}
 
 	if e.KObj != e2.KObj {
-		return false, fmt.Errorf("Wrong kobject (got: %s, wanted: %s)", e.KObj, e2.KObj)
+		return false, fmt.Errorf("wrong kobject (got: %s, wanted: %s)", e.KObj, e2.KObj)
 	}
 
 	if len(e.Env) != len(e2.Env) {
-		return false, fmt.Errorf("Wrong length of env (got: %d, wanted: %d)", len(e.Env), len(e2.Env))
+		return false, fmt.Errorf("wrong length of env (got: %d, wanted: %d)", len(e.Env), len(e2.Env))
 	}
 
 	var found bool
@@ -81,7 +81,7 @@ func (e UEvent) Equal(e2 UEvent) (bool, error) {
 			}
 		}
 		if !found {
-			return false, fmt.Errorf("Unable to find %s=%s env var from uevent", k, v)
+			return false, fmt.Errorf("unable to find %s=%s env var from uevent", k, v)
 		}
 	}
 	return true, nil
@@ -146,13 +146,13 @@ func ParseUEvent(raw []byte) (e *UEvent, err error) {
 	fields := bytes.Split(raw, []byte{0x00}) // 0x00 = end of string
 
 	if len(fields) == 0 {
-		err = fmt.Errorf("Wrong uevent format")
+		err = fmt.Errorf("wrong uevent format")
 		return
 	}
 
 	headers := bytes.Split(fields[0], []byte("@")) // 0x40 = @
 	if len(headers) != 2 {
-		err = fmt.Errorf("Wrong uevent header")
+		err = fmt.Errorf("wrong uevent header")
 		return
 	}
 
@@ -170,7 +170,7 @@ func ParseUEvent(raw []byte) (e *UEvent, err error) {
 	for _, envs := range fields[1 : len(fields)-1] {
 		env := bytes.Split(envs, []byte("="))
 		if len(env) != 2 {
-			err = fmt.Errorf("Wrong uevent env")
+			err = fmt.Errorf("wrong uevent env")
 			return
 		}
 		e.Env[string(env[0])] = string(env[1])

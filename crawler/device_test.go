@@ -48,7 +48,10 @@ DEVNAME=vcs3`,
 	}
 
 	for k, tcase := range testcases {
-		evt := getEventFromUEventData([]byte(tcase.got))
+		evt, err := getEventFromUEventData([]byte(tcase.got))
+		if err != nil {
+			t.Fatalf("Test %d failed with error: %v", k, err)
+		}
 		if !reflect.DeepEqual(evt, tcase.expected) {
 			t.Fatalf("Test %d failed (got: %v, expected: %v)", k, evt, tcase.expected)
 		}

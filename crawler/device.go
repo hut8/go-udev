@@ -63,7 +63,8 @@ func ExistingDevices(queue chan Device, errs chan error, matcher netlink.Matcher
 				}
 
 				// Append to env subsystem if existing
-				if link, err := os.Readlink(kObj + "/subsystem"); err == nil {
+				subsysPath := filepath.Join(SYSFS_ROOT, kObj, "subsystem")
+				if link, err := os.Readlink(subsysPath); err == nil {
 					env["SUBSYSTEM"] = filepath.Base(link)
 				}
 
